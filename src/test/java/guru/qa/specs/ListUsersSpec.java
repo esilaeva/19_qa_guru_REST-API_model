@@ -11,9 +11,9 @@ import static io.restassured.filter.log.LogDetail.BODY;
 import static io.restassured.filter.log.LogDetail.STATUS;
 import static io.restassured.http.ContentType.JSON;
 
-public class CreateUserSpec extends TestBase {
+public class ListUsersSpec extends TestBase {
 
-    public static RequestSpecification createUserRequestSpec = with()
+    public static RequestSpecification listUserRequestSpec = with()
             .filter(withCustomTemplates())
             .log().uri()
             .log().method()
@@ -22,9 +22,10 @@ public class CreateUserSpec extends TestBase {
             .baseUri(config.getBaseUrl())
             .basePath(config.getBasePath());
 
-    public static ResponseSpecification createUserResponseSpec = new ResponseSpecBuilder()
+    public static ResponseSpecification listUserResponseSpec = new ResponseSpecBuilder()
             .log(STATUS)
             .log(BODY)
-            .expectStatusCode(201)
+            .expectStatusCode(200)
             .build();
+
 }

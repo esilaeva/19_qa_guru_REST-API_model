@@ -1,22 +1,19 @@
 package guru.qa.models;
 
+import io.qameta.allure.internal.shadowed.jackson.annotation.JsonProperty;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class ListUsersResponseModel {
 
-    String page, per_page, total, total_pages;
-    String[] data ={};
-
-    /*
-      "data": [
-        {
-            "id": 7,
-            "email": "michael.lawson@reqres.in",
-            "first_name": "Michael",
-            "last_name": "Lawson",
-            "avatar": "https://reqres.in/img/faces/7-image.jpg"
-        },
-
-     */
+    int page;
+    @JsonProperty("per_page")
+    int per_page;
+    int total;
+    @JsonProperty("total_pages")
+    int total_pages;
+    List<ListUsersDataResponseModel> data;
+    ListUsersSupportDataResponseModel support;
 }

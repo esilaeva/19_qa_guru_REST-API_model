@@ -4,8 +4,12 @@ import guru.qa.models.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static guru.qa.specs.CreateUserSpec.createUserRequestSpec;
 import static guru.qa.specs.CreateUserSpec.createUserResponseSpec;
+import static guru.qa.specs.ListUsersSpec.listUserRequestSpec;
+import static guru.qa.specs.ListUsersSpec.listUserResponseSpec;
 import static guru.qa.specs.LoginSpec.loginRequestSpec;
 import static guru.qa.specs.LoginSpec.loginResponseSpec;
 import static guru.qa.specs.RegisterUserSpec.*;
@@ -18,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class InReqresTests extends TestBase{
 
     @Test
-    @DisplayName("Successful Login Test. Method POST")
+    @DisplayName("Successful Login Test")
     void successfulLoginTest() {
         LoginBodyModel autoData = new LoginBodyModel();
         autoData.setEmail("eve.holt@reqres.in");
@@ -38,7 +42,7 @@ public class InReqresTests extends TestBase{
     }
 
     @Test
-    @DisplayName("Create User. Method POST")
+    @DisplayName("Create User")
     void createUser() {
         CreateUserBodyModel createUserData = new CreateUserBodyModel();
         createUserData.setName("morpheus");
@@ -60,7 +64,7 @@ public class InReqresTests extends TestBase{
     }
 
     @Test
-    @DisplayName("Successful Register User. Method POST")
+    @DisplayName("Successful Register User")
     void successfulRegisterUser() {
         SuccessfulRegisterUserBodyModel registerUserData = new SuccessfulRegisterUserBodyModel();
         registerUserData.setEmail("eve.holt@reqres.in");
@@ -80,7 +84,7 @@ public class InReqresTests extends TestBase{
     }
 
     @Test
-    @DisplayName("Unsuccessful Register User. Method POST")
+    @DisplayName("Unsuccessful Register User")
     void unsuccessfulRegisterUser() {
         UnsuccessfulRegisterUserBodyModel registerUserData = new UnsuccessfulRegisterUserBodyModel();
         registerUserData.setEmail("sydney@fife");
@@ -99,7 +103,7 @@ public class InReqresTests extends TestBase{
     }
 
     @Test
-    @DisplayName("Update. Method PUT")
+    @DisplayName("Update user")
     void updateUser() {
         UpdateUserBodyModel updateUserData = new UpdateUserBodyModel();
         updateUserData.setName("morpheus");
@@ -117,6 +121,28 @@ public class InReqresTests extends TestBase{
         step("Verify response", () -> {
             assertEquals("morpheus", response.getName());
             assertEquals("zion resident", response.getJob());
+        });
+    }
+
+    @Test
+    @DisplayName("Get a list of all users")
+    void getListUser() {
+        ListUsersResponseModel response = step("Get a list of all users request", () ->
+                given(listUserRequestSpec)
+                        .when()
+                        .get("/users?page=2")
+                        .then()
+                        .spec(listUserResponseSpec)
+                        .extract().as(ListUsersResponseModel.class));
+
+        step("Verify response", () -> {
+            List<ListUsersDataResponseModel> data = response.getData();
+            assertEquals(6, response.getPer_page());
+            assertEquals("Byron", data.get(3).getFirst_name());
+            assertEquals("Lawson", data.get(0).getLast_name());
+            assertEquals(8, response.getData().get(1).getId());
+            assertEquals("https://reqres.in/#support-heading", response.getSupport().getUrl());
+            assertEquals("To keep ReqRes free, contributions towards server costs are appreciated!", response.getSupport().getText());
         });
     }
 }

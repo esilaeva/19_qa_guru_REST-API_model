@@ -1,12 +1,9 @@
 package guru.qa.tests;
 
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
+import guru.qa.config.ApiConfig;
+import org.aeonbits.owner.ConfigFactory;
 
 public class TestBase {
-    @BeforeAll
-    static void beforeAll() {
-        RestAssured.baseURI = "https://reqres.in";
-        RestAssured.basePath = "/api";
-    }
+
+    protected static final ApiConfig config = ConfigFactory.create(ApiConfig.class, System.getProperties());
 }
