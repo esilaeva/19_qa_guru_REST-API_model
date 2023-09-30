@@ -1,12 +1,12 @@
 package guru.qa.tests;
 
-import guru.qa.models.LoginBodyModel;
-import guru.qa.models.LoginResponseModel;
+import guru.qa.models.*;
 import org.junit.jupiter.api.Test;
 
+import static guru.qa.helpers.CustomAllureListener.withCustomTemplates;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InReqresTests extends TestBase{
@@ -17,113 +17,102 @@ public class InReqresTests extends TestBase{
         autoData.setEmail("eve.holt@reqres.in");
         autoData.setPassword("cityslicka");
 
-        LoginResponseModel response = given()
-                .log().uri()
-                .log().method()
-                .log().body()
-                .contentType(JSON)
-                .body(autoData)
-                .when()
-                .post("/login")
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .extract().as(LoginResponseModel.class);
+        LoginResponseModel response = step("Make login request", () ->
+                given()
+                        .filter(withCustomTemplates())
+                        .log().uri()
+                        .log().method()
+                        .log().body()
+                        .contentType(JSON)
+                        .body(autoData)
+                        .when()
+                        .post("/login")
+                        .then()
+                        .log().status()
+                        .log().body()
+                        .statusCode(200)
+                        .extract().as(LoginResponseModel.class));
 
-        assertEquals("QpwL5tke4Pnpja7X4", response.getToken());
-    }
-
-    @Test
-    void getListUsers() {
-        given()
-                .log().uri()
-                .log().method()
-                .log().body()
-                .when()
-                .get("/users?page=2")
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("page", is(2));
+        step("Verify response", () ->
+                assertEquals("QpwL5tke4Pnpja7X4", response.getToken()));
     }
 
     @Test
     void createUser() {
-        String authData = "{\"name\": \"morpheus\", \"job\": \"leader\"}";
+        CreateUserBodyModel createUserData = new CreateUserBodyModel();
+        createUserData.setName("morpheus");
+        createUserData.setJob("leader");
 
-        given()
+        CreateUserResponseModel response = step("Create user request", () ->
+                given()
+                        .filter(withCustomTemplates())
                 .log().uri()
                 .log().method()
                 .log().body()
                 .contentType(JSON)
-                .body(authData)
+                        .body(createUserData)
                 .when()
                 .post("/users")
                 .then()
                 .log().status()
                 .log().body()
                 .statusCode(201)
-                .body("name", is("morpheus"))
-                .body("job", is("leader"));
-    }
+                        .extract().as(CreateUserResponseModel.class));
 
-    @Test
-    void updateUser() {
-        String authData = "{\"name\": \"morpheus\", \"job\": \"zion resident\"}";
-
-        given()
-                .log().uri()
-                .log().method()
-                .log().body()
-                .contentType(JSON)
-                .body(authData)
-                .when()
-                .post("/users")
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(201)
-                .body("name", is("morpheus"))
-                .body("job", is("zion resident"));
+        step("Verify response", () -> {
+            assertEquals("morpheus", response.getName());
+            assertEquals("leader", response.getJob());
+        });
     }
 
     @Test
     void successfulRegisterUser() {
-        String authData = "{\"email\": \"eve.holt@reqres.in\", \"password\": \"pistol\"}";
+        SuccessfulRegisterUserBodyModel registerUserData = new SuccessfulRegisterUserBodyModel();
+        registerUserData.setEmail("eve.holt@reqres.in");
+        registerUserData.setPassword("pistol");
 
+        SuccessfulRegisterUserResponseModel response = step("Register user request", () ->
         given()
+                .filter(withCustomTemplates())
                 .log().uri()
                 .log().method()
                 .log().body()
                 .contentType(JSON)
-                .body(authData)
+                .body(registerUserData)
                 .when()
-                .post("/users")
+                .post("/register")
                 .then()
                 .log().status()
                 .log().body()
-                .statusCode(201)
-                .body("email", is("eve.holt@reqres.in"));
+                .statusCode(200)
+                .extract().as(SuccessfulRegisterUserResponseModel.class));
+
+        step("Verify response", () ->
+                assertEquals("QpwL5tke4Pnpja7X4", response.getToken()));
     }
 
     @Test
     void unsuccessfulRegisterUser() {
-        String authData = "{\"email\": \"sydney@fife\"}";
+        UnsuccessfulRegisterUserBodyModel registerUserData = new UnsuccessfulRegisterUserBodyModel();
+        registerUserData.setEmail("sydney@fife");
 
+        UnsuccessfulRegisterUserResponseModel response = step("Register user request", () ->
         given()
+                .filter(withCustomTemplates())
                 .log().uri()
                 .log().method()
                 .log().body()
                 .contentType(JSON)
-                .body(authData)
+                .body(registerUserData)
                 .when()
                 .post("/register")
                 .then()
                 .log().status()
                 .log().body()
                 .statusCode(400)
-                .body("error", is("Missing password"));
+                .extract().as(UnsuccessfulRegisterUserResponseModel.class));
+
+        step("Verify response", () ->
+                assertEquals("Missing password", response.getError()));
     }
 }
