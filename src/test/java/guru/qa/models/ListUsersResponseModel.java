@@ -1,6 +1,6 @@
 package guru.qa.models;
 
-import io.qameta.allure.internal.shadowed.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -10,10 +10,10 @@ public class ListUsersResponseModel {
 
     int page;
     @JsonProperty("per_page")
-    int per_page;
+    int perPage;
     int total;
     @JsonProperty("total_pages")
-    int total_pages;
+    int totalPages;
     List<ListUsersDataResponseModel> data;
     ListUsersSupportDataResponseModel support;
 }

@@ -19,7 +19,7 @@ import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class InReqresTests extends TestBase{
+public class InReqresTests {
 
     @Test
     @DisplayName("Successful Login Test")
@@ -137,9 +137,9 @@ public class InReqresTests extends TestBase{
 
         step("Verify response", () -> {
             List<ListUsersDataResponseModel> data = response.getData();
-            assertEquals(6, response.getPer_page());
-            assertEquals("Byron", data.get(3).getFirst_name());
-            assertEquals("Lawson", data.get(0).getLast_name());
+            assertEquals(6, response.getPerPage());
+            assertEquals("Byron", data.get(3).getFirstName());
+            assertEquals("Lawson", data.get(0).getLastName());
             assertEquals(8, response.getData().get(1).getId());
             assertEquals("https://reqres.in/#support-heading", response.getSupport().getUrl());
             assertEquals("To keep ReqRes free, contributions towards server costs are appreciated!", response.getSupport().getText());
